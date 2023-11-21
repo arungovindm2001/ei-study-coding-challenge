@@ -1,6 +1,27 @@
 # Ei Study Coding Challenge
 
-## 1) Satellite Command System
+## 1) Virtual Classroom Manager
+
+https://github.com/arungovindm2001/ei-study-coding-challenge/assets/classroom_manager.mp4
+
+### Overview
+A terminal-based Virtual Classroom Manager that handles class scheduling, student attendance, and assignment submissions. The data is stored in a json file which is created in the directory when the program is run.
+
+### Initial State
+- Number of Classrooms: 0
+- Number of Students: 0
+- Number of Assignments: 0
+
+### Functional Requirements
+- **Classroom Management:** Ability to add, list, and remove virtual classrooms. :white_check_mark:
+- **Student Management:** Ability to enroll students into classrooms, and list students in each classroom. :white_check_mark:
+- **Assignment Management:** Schedule assignments for classrooms and allow students to submit them. :white_check_mark:
+
+---
+
+## 2) Satellite Command System
+
+https://github.com/arungovindm2001/ei-study-coding-challenge/assets/satellite.mp4
 
 ### Overview
 
@@ -41,21 +62,7 @@ After these commands, the satellite's state would be:
 - Solar Panels: "Active"
 - Data Collected: 10
 
-## Virtual Classroom Manager
-
-### Overview
-A terminal-based Virtual Classroom Manager that handles class scheduling, student attendance, and assignment submissions. The data is stored in a json file which is created in the directory when the program is run.
-
-### Initial State
-- Number of Classrooms: 0
-- Number of Students: 0
-- Number of Assignments: 0
-
-### Functional Requirements
-- **Classroom Management:** Ability to add, list, and remove virtual classrooms. :white_check_mark:
-- **Student Management:** Ability to enroll students into classrooms, and list students in each classroom. :white_check_mark:
-- **Assignment Management:** Schedule assignments for classrooms and allow students to submit them. :white_check_mark:
-
+---
 
 ## How to Run
 

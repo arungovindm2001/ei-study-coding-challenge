@@ -1,6 +1,9 @@
 import os
 import json
 import argparse
+import logging
+
+logging.basicConfig(filename='classroom.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class JSONHandler:
     """
@@ -22,10 +25,10 @@ class JSONHandler:
         """
         self.data = { "classrooms": {} }
         if not os.path.exists("data.json"):
-            print("Creating JSON file..")
+            logging.info("Creating JSON file..")
             with open("data.json",'w') as json_file:
                 json.dump(self.data, json_file, indent=2)
-            print("JSON file created")
+            logging.info("JSON file created")
         else:
             with open("data.json", "r") as json_file:
                 self.data = json.load(json_file)
@@ -39,7 +42,8 @@ class JSONHandler:
             data (dict): The data to be written to the JSON file.
         """
         with open("data.json",'w') as json_file:
-                json.dump(data, json_file, indent=2)
+            json.dump(data, json_file, indent=2)
+
 
 class ClassroomManager(JSONHandler):
     """
@@ -72,11 +76,14 @@ class ClassroomManager(JSONHandler):
         """
         self.data = { "classrooms": {} }
         if os.path.exists("data.json"):
-            ask = input("File already exists. Do you want to overwrite [Y/N]:")
-            if ask == "Y" or "yes" or "Yes":
+            ask = input("File already exists. Do you want to overwrite [Y/N]:").lower()
+            if ask in {"y", "yes"}:
                 self.update_json(self.data)
-            elif ask == "N" or "no" or "No":
+                logging.info("Data truncated.")
+            elif ask in {"n", "no"}:
                 exit()
+            else:
+                print("Invalid input. Please enter 'Y' or 'N'")
         else:
             with open("data.json", "w") as json_file:
                 json.dump(self.data, json_file, indent=2)
@@ -90,16 +97,49 @@ class ClassroomManager(JSONHandler):
             args (list): Command arguments.
                 args[0] (str): Name of the classroom.
 
-        Prints an error message and exits if the classroom already exists.
+        Prints an error message and exits if the classroom name is not provided or if it already exists.
         """
-        if args[0] in self.data["classrooms"].keys():
-            print("Classroom already exists")
+        if not args:
+            print("Error: Classroom name not provided.")
+            logging.error("Classroom name not provided.")
             exit()
 
-        self.data["classrooms"][args[0]] = {"students":{}, "assignment":None}
-        self.update_json(self.data)
-        print(f"Classroom {args[0]} added")
+        classroom_name = args[0]
+        if classroom_name in self.data["classrooms"].keys():
+            print("Error: Classroom already exists.")
+            logging.error("Classroom already exists.")
+            exit()
 
+        self.data["classrooms"][classroom_name] = {"students": {}, "assignment": None}
+        self.update_json(self.data)
+        print(f"Classroom {classroom_name} added")
+        logging.info(f"Classroom {classroom_name} added.")
+
+
+    def remove_classroom(self, args):
+        """
+        Removes an existing classroom.
+
+        Args:
+            args (list): Command arguments.
+                args[0] (str): Name of the classroom to be removed.
+
+        Prints an error message if the classroom name is not provided or if it doesn't exist.
+        """
+        if not args:
+            print("Error: Classroom name not provided.")
+            logging.error("Classroom name not provided.")
+            exit()
+
+        classroom_name = args[0]
+        try:
+            self.data["classrooms"].pop(classroom_name)
+            self.update_json(self.data)
+            print(f"Classroom {classroom_name} removed successfully")
+            logging.info(f"Classroom {classroom_name} removed successfully.")
+        except KeyError:
+            print(f"Error: Classroom {classroom_name} doesn't exist")
+            logging.error(f"Classroom {classroom_name} doesn't exist.")
 
     def list_classrooms(self, args):
         """
@@ -113,30 +153,12 @@ class ClassroomManager(JSONHandler):
         try:
             if len(self.data["classrooms"].keys()) == 0:
                 print("No classrooms as of now. Try adding new classrooms with 'add_classroom' command")
+                logging.info("No classrooms as of now. Try adding new classrooms with 'add_classroom' command")
             else:
                 for classroom in self.data["classrooms"].keys():
                     print(classroom)
         except:
             print("Unknown error occurred")
-
-
-    def remove_classroom(self, args):
-        """
-        Removes an existing classroom.
-
-        Args:
-            args (list): Command arguments.
-                args[0] (str): Name of the classroom to be removed.
-
-        Prints an error message if the classroom doesn't exist.
-        """
-        try:    
-            self.data["classrooms"].pop(args[0])
-            self.update_json(self.data)
-            print(f"Classroom {args[0]} removed successfully")
-        except KeyError:
-            print(f"Classroom {args[0]} doesn't exist")
-
 
     def add_student(self, args):
         """
@@ -147,24 +169,34 @@ class ClassroomManager(JSONHandler):
                 args[0] (str): Student ID.
                 args[1] (str): Name of the classroom.
 
-        Prints an error message if the student is already enrolled or if the classroom doesn't exist.
+        Prints an error message if student ID or classroom name is not provided,
+        if the student is already enrolled, or if the classroom doesn't exist.
         """
-        try:
-            if args[0] in self.data["classrooms"][args[1]]["students"].keys():
-                print("Student already enrolled")
-                exit()
+        if len(args) < 2:
+            print("Error: Both student ID and classroom name are required.")
+            logging.error("Both student ID and classroom name are required.")
+            exit()
 
-            if self.data["classrooms"][args[1]]["assignment"] != None:
-                self.data["classrooms"][args[1]]["students"][args[0]] = {"assignment_completed":False}
-            else:
-                self.data["classrooms"][args[1]]["students"][args[0]] = {"assignment_completed":None}
+        student_id, classroom_name = args[0], args[1]
 
-            self.update_json(self.data)
-            print(f"Student {args[0]} has been enrolled in {args[1]}")
-        except KeyError:
-            print(f"Classroom {args[1]} doesn't exist")
-        except IndexError:
-            print("Classroom field missing")
+        if student_id in self.data["classrooms"].get(classroom_name, {}).get("students", {}).keys():
+            print("Error: Student already enrolled.")
+            logging.error("Student already enrolled.")
+            exit()
+
+        if classroom_name not in self.data["classrooms"].keys():
+            print(f"Error: Classroom {classroom_name} doesn't exist.")
+            logging.error(f"Classroom {classroom_name} doesn't exist.")
+            exit()
+
+        if self.data["classrooms"][classroom_name]["assignment"] is not None:
+            self.data["classrooms"][classroom_name]["students"][student_id] = {"assignment_completed": False}
+        else:
+            self.data["classrooms"][classroom_name]["students"][student_id] = {"assignment_completed": None}
+
+        self.update_json(self.data)
+        print(f"Student {student_id} has been enrolled in {classroom_name}")
+        logging.info(f"Student {student_id} enrolled in {classroom_name}.")
 
 
     def list_students(self, args):
@@ -175,15 +207,20 @@ class ClassroomManager(JSONHandler):
             args (list): Command arguments.
                 args[0] (str): Name of the classroom.
 
-        Prints an error message if the classroom doesn't exist.
+        Prints an error message if the classroom name is not provided or if it doesn't exist.
         """
+        if not args:
+            print("Error: Classroom name not provided.")
+            logging.error("Classroom name not provided.")
+            exit()
+
+        classroom_name = args[0]
         try:
-            for classroom in self.data["classrooms"].keys():
-                print(f"Classroom name: {classroom}")
-                for student_id in self.data["classrooms"][classroom]["students"].keys():
-                    print(student_id, ' ')
+            for student_id in self.data["classrooms"][classroom_name]["students"].keys():
+                print(student_id, ' ')
         except KeyError:
-            print(f"Classroom {args[0]} doesn't exist")
+            print(f"Error: Classroom {classroom_name} doesn't exist.")
+            logging.error(f"Classroom {classroom_name} doesn't exist.")
 
 
     def schedule_assignment(self, args):
@@ -195,18 +232,26 @@ class ClassroomManager(JSONHandler):
                 args[0] (str): Name of the classroom.
                 args[1:] (list): Details of the assignment.
 
-        Prints an error message if the classroom doesn't exist.
+        Prints an error message if the classroom name is not provided or if it doesn't exist.
         """
-        try:
-            self.data["classrooms"][args[0]]["assignment"] = ' '.join(args[1:])
+        if not args:
+            print("Error: Classroom name not provided.")
+            logging.error("Classroom name not provided.")
+            exit()
 
-            for student_id in self.data["classrooms"][args[0]]["students"]:
-                self.data["classrooms"][args[0]]["students"][student_id]["assignment_completed"] = False
+        classroom_name = args[0]
+        try:
+            self.data["classrooms"][classroom_name]["assignment"] = ' '.join(args[1:])
+
+            for student_id in self.data["classrooms"][classroom_name]["students"]:
+                self.data["classrooms"][classroom_name]["students"][student_id]["assignment_completed"] = False
 
             self.update_json(self.data)
-            print(f"Assignment for {args[0]} has been scheduled")
+            print(f"Assignment for {classroom_name} has been scheduled")
+            logging.info(f"Assignment for {classroom_name} has been scheduled.")
         except KeyError:
-            print(f"Classroom {args[0]} doesnt exist for scheduling assignment")
+            print(f"Error: Classroom {classroom_name} doesn't exist for scheduling assignment")
+            logging.error(f"Classroom {classroom_name} doesn't exist for scheduling assignment.")
 
 
     def submit_assignment(self, args):
@@ -219,23 +264,35 @@ class ClassroomManager(JSONHandler):
                 args[1] (str): Name of the classroom.
                 args[2:] (list): Details of the assignment.
 
-        Prints an error message if the assignment doesn't exist or if there is an unexpected error.
+        Prints an error message if student ID, classroom name, or assignment details are not provided,
+        if the assignment doesn't exist, or if there is an unexpected error.
         """
-        try:
-            assignment_status = self.data["classrooms"][args[1]]["students"][args[0]]["assignment_completed"]
-            if assignment_status == None:
-                print(f"Assignment hasn't been given in {args[1]}")
-            elif assignment_status == True:
-                print("Assignment already submitted")
-            elif assignment_status == False:
-                self.data["classrooms"][args[1]]["students"][args[0]]["assignment_completed"] = True
-                self.update_json(self.data)
-                print(f"Assignment submitted by Student {args[0]} in {args[1]}")
-        except KeyError:
-            print("Assignment doesn't exist")
-        except:
-            print("Some error occurred")
+        if len(args) < 3:
+            print("Error: Student ID, classroom name, and assignment details are required.")
+            logging.error("Student ID, classroom name, and assignment details are required.")
+            exit()
 
+        student_id, classroom_name = args[0], args[1]
+
+        try:
+            assignment_status = self.data["classrooms"][classroom_name]["students"][student_id]["assignment_completed"]
+            if assignment_status is None:
+                print(f"Error: Assignment hasn't been given in {classroom_name}")
+                logging.error(f"Assignment hasn't been given in {classroom_name}")
+            elif assignment_status:
+                print("Error: Assignment already submitted")
+                logging.error("Assignment already submitted")
+            elif not assignment_status:
+                self.data["classrooms"][classroom_name]["students"][student_id]["assignment_completed"] = True
+                self.update_json(self.data)
+                print(f"Assignment submitted by Student {student_id} in {classroom_name}")
+                logging.info(f"Assignment submitted by Student {student_id} in {classroom_name}.")
+        except KeyError:
+            print("Error: Assignment doesn't exist")
+            logging.error("Assignment doesn't exist.")
+        except Exception as e:
+            print(f"Error: {str(e)}")
+            logging.error(f"{str(e)}")
 
 
 def main():
@@ -281,8 +338,6 @@ def main():
         commands[args.command](args.arguments)
     else:
         print(f"Invalid command: {args.command}\nLook up the list of commands with -h argument")
-
-
 
 if __name__ == "__main__":
     main()
