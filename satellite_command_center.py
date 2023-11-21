@@ -1,27 +1,69 @@
 import curses
 
 class Satellite:
+    """
+    Represents a satellite with orientation, solar panel status, and data collection capabilities.
+
+    Attributes:
+        orientation (str): Current orientation of the satellite.
+        solar_panels (str): Status of the solar panels (Active/Inactive).
+        data (int): Amount of data collected by the satellite.
+
+    Methods:
+        status(): Prints the current status of the satellite.
+        rotate(orientation): Changes the orientation of the satellite.
+        activatePanels(): Activates the solar panels.
+        deactivatePanels(): Deactivates the solar panels.
+        collectData(): Collects data if solar panels are active.
+
+    """
     def __init__(self):
+        """
+        Initializes a Satellite object with default values.
+        """
         self.orientation = "North"
         self.solar_panels = "Inactive"
         self.data = 0
 
     def status(self):
+        """
+        Prints the current status of the satellite.
+        """
         print(f"\nOrientation: {self.orientation}\nSolar Panels: {self.solar_panels}\nData collected: {self.data}")
     
     def rotate(self, orientation):
+        """
+        Changes the orientation of the satellite.
+
+        Args:
+            orientation (str): The new orientation.
+
+        """
         self.orientation = orientation
         print(self.orientation)
     
     def activatePanels(self):
+        """
+        Activates the solar panels.
+        """
         self.solar_panels = "Active"
         print(self.solar_panels)
     
     def deactivatePanels(self):
+        """
+        Deactivates the solar panels.
+        """
         self.solar_panels = "Inactive"
         print(self.solar_panels)
     
     def collectData(self):
+        """
+        Collects data if solar panels are active.
+
+        Returns:
+            bool: True if data is collected, False otherwise.
+
+        """
         if self.solar_panels == "Active":
             self.data += 10
             print(self.data)
@@ -31,6 +73,14 @@ class Satellite:
             return False
 
 def display_menu(menu_win, selected_row_idx):
+    """
+    Displays the menu in the curses window.
+
+    Args:
+        menu_win (curses window): The window where the menu is displayed.
+        selected_row_idx (int): The index of the selected row in the menu.
+
+    """
     menu_win.clear()
     menu_win.border()
     h, w = menu_win.getmaxyx()
@@ -46,6 +96,14 @@ def display_menu(menu_win, selected_row_idx):
     menu_win.refresh()
 
 def refresh_dashboard(output_win, satellite):
+    """
+    Refreshes the dashboard with the current satellite information.
+
+    Args:
+        output_win (curses window): The window where the dashboard is displayed.
+        satellite (Satellite): The Satellite object containing information.
+
+    """
     output_win.clear()
     output_win.border()
     output_win.addstr(0,int(curses.COLS/2.3), "SATELLITE COMMAND CENTER")
@@ -55,6 +113,15 @@ def refresh_dashboard(output_win, satellite):
     output_win.refresh()
 
 def modify(index, output_win, satellite):
+    """
+    Modifies the satellite based on the selected menu option.
+
+    Args:
+        index (int): The index of the selected menu option.
+        output_win (curses window): The window where the dashboard is displayed.
+        satellite (Satellite): The Satellite object to be modified.
+
+    """
     if index == 0:
         satellite.rotate("North")
     elif index == 1:
@@ -77,6 +144,13 @@ def modify(index, output_win, satellite):
 
 
 def main(stdscr):
+    """
+    The main function to run the curses-based satellite control program.
+
+    Args:
+        stdscr (curses window): The standard screen window.
+
+    """
     satellite = Satellite()
 
     stdscr.addstr(0,0,"Enter any key to start..")
