@@ -2,7 +2,7 @@
 
 ## 1) Virtual Classroom Manager
 
-https://github.com/arungovindm2001/ei-study-coding-challenge/assets/classroom_manager.mp4
+https://github.com/arungovindm2001/ei-study-coding-challenge/assets/67337602/17cdbc86-6bdc-4626-baa4-00ee8c16816c
 
 ### Overview
 A terminal-based Virtual Classroom Manager that handles class scheduling, student attendance, and assignment submissions. The data is stored in a json file which is created in the directory when the program is run.
@@ -21,7 +21,7 @@ A terminal-based Virtual Classroom Manager that handles class scheduling, studen
 
 ## 2) Satellite Command System
 
-https://github.com/arungovindm2001/ei-study-coding-challenge/assets/satellite.mp4
+https://github.com/arungovindm2001/ei-study-coding-challenge/assets/67337602/8c216bb2-38a5-4331-bb42-a6df84c9f438
 
 ### Overview
 
