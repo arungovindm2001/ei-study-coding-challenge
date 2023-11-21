@@ -251,6 +251,30 @@ class ClassroomManager(JSONHandler):
         except KeyError:
             print(f"Error: Classroom {classroom_name} doesn't exist or there are no students in {classroom_name}")
             logging.error(f"Error: Classroom {classroom_name} doesn't exist or there are no students in {classroom_name}")
+    
+    def list_assignment(self, args):
+        """
+        Lists all assignments in a classroom.
+
+        Args:
+            args (list): Command arguments.
+                args[0] (str): Name of the classroom.
+
+        Prints an error message if the classroom name is not provided or if it doesn't exist.
+        """
+        if not args:
+            print("Error: Classroom name not provided.")
+            logging.error("Classroom name not provided.")
+            exit()
+
+        classroom_name = args[0]
+        try:
+            assignment = self.data["classrooms"][classroom_name]["assignment"]
+            print(assignment)
+
+        except KeyError:
+            print(f"Error: Classroom {classroom_name} doesn't exist or there is no assignment in {classroom_name}")
+            logging.error(f"Error: Classroom {classroom_name} doesn't exist or there is no assignment in {classroom_name}")
 
 
     def schedule_assignment(self, args):
@@ -373,10 +397,11 @@ def main():
     4) remove_classroom <Class_Name>
     5) add_student <Student_ID> <Class_Name>
     6) list_students <Class_Name>
-    7) list_overdue_students <Class_Name>
+    7) list_students_overdue <Class_Name>
     8) schedule_assignment <Class_Name> <Details>
     9) remove_assignment <Class_Name>
-    10) submit_assignment <Student_ID> <Class_Name> <Details>
+    10) list_assignment <Class_Name>
+    11) submit_assignment <Student_ID> <Class_Name> <Details>
     """,
     )
 
@@ -398,6 +423,7 @@ def main():
         "list_students_overdue": manager.list_students_overdue,
         "schedule_assignment": manager.schedule_assignment,
         "remove_assignment": manager.remove_assignment,
+        "list_assignment": manager.list_assignment,
         "submit_assignment": manager.submit_assignment,
     }
 
