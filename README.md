@@ -1,43 +1,22 @@
 # Ei Study Coding Challenge
 
-## Satellite Command System
+## 1) Satellite Command System
 
 ### Overview
 
-This project implements a Satellite Command System that simulates controlling a satellite in orbit. The system allows users to initialize a satellite, change its orientation, control the status of solar panels, and collect data.
+A Satellite Command System that simulates controlling a satellite in orbit. The system allows users to initialize a satellite, change its orientation, control the status of solar panels, and collect data.
 
 ### Functional Requirements
 
-#### 1. Initialize the Satellite
-
-Create a class or function that initializes the satellite's attributes to their initial state.
-
-#### 2. Rotate
-
-Implement a command called 'rotate' that takes a direction parameter (North, South, East, West) and sets the satellite's orientation accordingly.
-
-Example:
-```python
-rotate("North")
-```
-
-#### 3. Activate/Deactivate Solar Panels
-
-Implement commands called 'activatePanels' and 'deactivatePanels' to control the solar panels' status.
-
-Example:
-```python
-activatePanels()
-```
-
-#### 4. Collect Data
-
-Implement a command called 'collectData' that increments the 'Data Collected' attribute by 10 units, but only if the solar panels are "Active".
-
-Example:
-```python
-collectData()
-```
+- **Initialize the Satellite:** Create a class or function that initializes the satellite's attributes to their initial state. :white_check_mark:
+- **Rotate:** Implement a command called 'rotate' that takes a direction parameter (North, South, East, West) and sets the satellite's
+orientation accordingly.:white_check_mark:<br>
+Example: `rotate(North)` would set the orientation to "North".
+- **Activate/Deactivate Solar Panels:** Implement commands called 'activatePanels' and 'deactivatePanels' to control the solar panels'
+status.:white_check_mark:<br>
+Example: `activatePanels()` would set the solar panels to "Active".
+- **Collect Data:** Implement a command called 'collectData' that increments the 'Data Collected' attribute by 10 units, but only if the solar panels are "Active".:white_check_mark:<br>
+Example: `collectData()` would set the data collected to 10 if the solar panels are "Active".
 
 ### Initial State
 
@@ -62,7 +41,23 @@ After these commands, the satellite's state would be:
 - Solar Panels: "Active"
 - Data Collected: 10
 
-### How to Run
+## Virtual Classroom Manager
+
+### Overview
+A terminal-based Virtual Classroom Manager that handles class scheduling, student attendance, and assignment submissions. The data is stored in a json file which is created in the directory when the program is run.
+
+### Initial State
+- Number of Classrooms: 0
+- Number of Students: 0
+- Number of Assignments: 0
+
+### Functional Requirements
+- **Classroom Management:** Ability to add, list, and remove virtual classrooms. :white_check_mark:
+- **Student Management:** Ability to enroll students into classrooms, and list students in each classroom. :white_check_mark:
+- **Assignment Management:** Schedule assignments for classrooms and allow students to submit them. :white_check_mark:
+
+
+## How to Run
 
 1. Clone the repository:
    ```bash
@@ -73,12 +68,16 @@ After these commands, the satellite's state would be:
    ```bash
    cd ei-study-coding-challenge
    ```
-
+### For Satellite Command Center
 3. Run the program or integrate the provided commands into your Python script.
    ```
-   python3 satellite_command_center.py
+   python satellite_command_center.py
    ```
-
+### For Virtual Classroom Manager
+3. Run the program or integrate the provided commands into your Python script.
+   ```
+   python classroom_manager.py <command> <arguments>
+   ```
 
 ## Contributing
 
