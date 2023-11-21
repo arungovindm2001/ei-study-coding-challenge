@@ -222,6 +222,36 @@ class ClassroomManager(JSONHandler):
             print(f"Error: Classroom {classroom_name} doesn't exist.")
             logging.error(f"Classroom {classroom_name} doesn't exist.")
 
+    def list_students_overdue(self, args):
+        """
+        Lists all students who are due to submit assignment.
+
+        Args:
+            args (list): Command arguments.
+                args[0] (str): Name of the classroom.
+
+        Prints an error message if the classroom name is not provided or if it doesn't exist.
+        """
+        if not args:
+            print("Error: Classroom name not provided.")
+            logging.error("Classroom name not provided.")
+            exit()
+
+        classroom_name = args[0]
+        try:
+            flag = 0
+            students = self.data["classrooms"][classroom_name]["students"]
+            for student_id in students:
+                if not students[student_id]["assignment_completed"]:
+                    print(student_id)
+                    flag = 1
+            if not flag:
+                print(f"All students completed their assignment in {classroom_name}")
+
+        except KeyError:
+            print(f"Error: Classroom {classroom_name} doesn't exist or there are no students in {classroom_name}")
+            logging.error(f"Error: Classroom {classroom_name} doesn't exist or there are no students in {classroom_name}")
+
 
     def schedule_assignment(self, args):
         """
@@ -252,6 +282,39 @@ class ClassroomManager(JSONHandler):
         except KeyError:
             print(f"Error: Classroom {classroom_name} doesn't exist for scheduling assignment")
             logging.error(f"Classroom {classroom_name} doesn't exist for scheduling assignment.")
+    
+    def remove_assignment(self, args):
+        """
+        Removes an assignment for a classroom.
+
+        Args:
+            args (list): Command arguments.
+                args[0] (str): Name of the classroom.
+
+        Prints an error message if the classroom name is not provided or if it doesn't exist.
+        """
+        if not args:
+            print("Error: Classroom name not provided.")
+            logging.error("Classroom name not provided.")
+            exit()
+
+        classroom_name = args[0]
+        try:
+            assignment = self.data["classrooms"][classroom_name]["assignment"]
+            if assignment != None:
+                assignment = None
+
+                for student_id in self.data["classrooms"][classroom_name]["students"]:
+                    self.data["classrooms"][classroom_name]["students"][student_id]["assignment_completed"] = None
+
+                self.update_json(self.data)
+                print(f"Assignment of {classroom_name} removed successfully")
+                logging.info(f"Assignment of {classroom_name} removed successfully")
+            else:
+                print(f"Error: There is no assignment scheduled in {classroom_name}")
+                logging.error(f"There is no assignment scheduled in {classroom_name}")
+        except KeyError:
+            print(f"Classroom {classroom_name} doesn't exist")
 
 
     def submit_assignment(self, args):
@@ -310,8 +373,10 @@ def main():
     4) remove_classroom <Class_Name>
     5) add_student <Student_ID> <Class_Name>
     6) list_students <Class_Name>
-    7) schedule_assignment <Class_Name> <Details>
-    8) submit_assignment <Student_ID> <Class_Name> <Details>
+    7) list_overdue_students <Class_Name>
+    8) schedule_assignment <Class_Name> <Details>
+    9) remove_assignment <Class_Name>
+    10) submit_assignment <Student_ID> <Class_Name> <Details>
     """,
     )
 
@@ -330,7 +395,9 @@ def main():
         "list_classrooms": manager.list_classrooms,
         "add_student": manager.add_student,
         "list_students": manager.list_students,
+        "list_students_overdue": manager.list_students_overdue,
         "schedule_assignment": manager.schedule_assignment,
+        "remove_assignment": manager.remove_assignment,
         "submit_assignment": manager.submit_assignment,
     }
 
